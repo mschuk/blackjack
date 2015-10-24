@@ -24,9 +24,7 @@ end
 
 
 def deal_hand(deck)
-  if deck.empty?
-    deck = create_deck
-  end
+  deck = create_deck if deck.empty?
   hand = {}
   first_card_key = deck.keys.sample
   hand[first_card_key] = deck[first_card_key]
@@ -41,7 +39,7 @@ end
 def print_hand(hand)
   display = ''
   hand.keys.each do |name|
-    display += "'" + name + "'" + ' '
+    display << "'#{name}' "
   end
   display
 end
@@ -57,17 +55,13 @@ def calculate_hand(hand)
   hand.values.inject(:+)
 end
 
-def ace_value(hand)
-  # as long as the hand is over 21 and includes and ace, change keep changing value 11 to 1
-  if calculate_hand(hand) > 21 && hand.values.include?(11)
-    until calculate_hand(hand) < 22
-      hand.each do |suite, num|
-        if num == 11
-          hand[suite] = 1
-        end
+def adjust_ace_value(hand)
+  # if hand includes an 11 and is over 22, change the value of 11 to 1
+  hand.each do |suite, num|
+      if num == 11 && calculate_hand(hand) > 22
+        hand[suite] = 1
       end
     end
-  end
 end
 
 # deal hand to player and dealer
@@ -89,7 +83,7 @@ end
 
 
 # players turn
-while player_value < 21
+while player_value < 22
   puts "Your total is: #{calculate_hand(players_hand)}. Do you want to hit or stay? (enter h to hit, s to stay)"
   action = gets.chomp
   unless %w(h s).include?(action)
@@ -98,8 +92,7 @@ while player_value < 21
   end
   if action == 'h'
     hit(deck, players_hand)
-    #adjust ace values if needed
-    ace_value(players_hand)
+    adjust_ace_value(players_hand)
     player_value = calculate_hand(players_hand)
     puts "#{PLAYER_NAME} your hand is now: #{print_hand(players_hand)}"
   else
@@ -114,12 +107,11 @@ while player_value < 21
 end
 
 puts "Dealer's hand is #{print_hand(dealers_hand).strip} and total is: #{dealer_value}"
-#dealers turn
 while dealer_value < 17
   puts 'Dealer hits'
   hit(deck, dealers_hand)
   # adjust ace values if needed
-  ace_value(dealers_hand)
+  adjust_ace_value(dealers_hand)
   dealer_value = calculate_hand(dealers_hand)
   puts "Dealer's hand is now #{print_hand(dealers_hand).strip} and total is: #{dealer_value}"
   if dealer_value > 21
