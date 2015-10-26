@@ -110,7 +110,6 @@ puts "Dealer's hand is #{print_hand(dealers_hand).strip} and total is: #{dealer_
 while dealer_value < 17
   puts 'Dealer hits'
   hit(deck, dealers_hand)
-  # adjust ace values if needed
   adjust_ace_value(dealers_hand)
   dealer_value = calculate_hand(dealers_hand)
   puts "Dealer's hand is now #{print_hand(dealers_hand).strip} and total is: #{dealer_value}"
